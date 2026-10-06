@@ -1,0 +1,8 @@
+Add these lines to your EXISTING .env.local file. Do not replace the file.
+
+GEMINI_API_KEY=YOUR_GEMINI_API_KEY
+GEMINI_SCREENSHOT_MODEL=gemini-3.5-flash-lite
+
+GEMINI_SCREENSHOT_MODEL is optional. If omitted, ScreenshotOS defaults to gemini-3.5-flash-lite.
+
+You can remove old OPENAI_API_KEY and OPENAI_SCREENSHOT_MODEL lines if you no longer use them.

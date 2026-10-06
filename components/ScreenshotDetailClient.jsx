@@ -36,58 +36,7 @@ const CATEGORIES = [
   'conversation',
   'other',
 ];
-const MONTHS = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-];
 
-function formatScreenshotDateTime(value) {
-  if (!value) return '';
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return '';
-  }
-
-  const parts = new Intl.DateTimeFormat('en-ZA', {
-    timeZone: 'Africa/Johannesburg',
-    day: 'numeric',
-    month: 'numeric',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-  }).formatToParts(date);
-
-  const get = (type) =>
-    parts.find((part) => part.type === type)?.value || '';
-
-  const day = Number(get('day'));
-  const month = Number(get('month'));
-  const year = get('year');
-
-  const hour = get('hour');
-  const minute = get('minute');
-  const second = get('second');
-
-  if (!day || !month || !year) {
-    return '';
-  }
-
-  return `${day} ${MONTHS[month - 1]} ${year}, ${hour}:${minute}:${second}`;
-}
 const INTENTS = [
   'possible_purchase',
   'eat',

@@ -1,0 +1,31 @@
+.page{min-height:100vh;background:#f4f2ec;color:#242722;padding:26px}
+.shell{max-width:1120px;margin:0 auto}
+.header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:42px}
+.back{display:inline-flex;align-items:center;gap:8px;color:#3e413a;text-decoration:none;font-size:11px;font-weight:800}
+.hero{max-width:720px;margin-bottom:28px}
+.hero>span{font-size:9px;font-weight:900;letter-spacing:.12em;color:#6f736a}
+.hero h1{margin:9px 0 10px;font-size:clamp(36px,5vw,62px);line-height:.98;letter-spacing:-.055em}
+.hero p{max-width:620px;margin:0;color:#74776f;font-size:12px;line-height:1.7}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card,.dangerCard{border:1px solid #dedbd2;border-radius:18px;background:#fff;padding:22px}
+.cardHeading{display:flex;align-items:flex-start;gap:11px;margin-bottom:20px}
+.cardHeading>div{display:grid;gap:3px}.cardHeading strong{font-size:13px}.cardHeading p{margin:0;color:#85877f;font-size:9px;line-height:1.5}
+.icon,.dangerIcon{width:34px;height:34px;flex:0 0 auto;display:grid;place-items:center;border-radius:10px;background:#e7efe8;color:#31583c}
+.field{display:grid;gap:6px;margin-bottom:13px}.field>span{font-size:8px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#777970}
+.field input{width:100%;box-sizing:border-box;border:1px solid #d9d6ce;border-radius:10px;background:#fbfaf7;color:#30332e;padding:11px 12px;font:inherit;font-size:11px;outline:none}
+.field input:focus{border-color:#74917d;box-shadow:0 0 0 3px rgba(78,113,89,.10)}.field input:disabled{color:#84867f;background:#f1f0eb}.field small{font-size:8px;color:#9a9b95}
+.actions{display:flex;margin-top:16px}.primaryButton,.secondaryButton,.dangerButton{display:inline-flex;align-items:center;justify-content:center;gap:7px;border-radius:10px;padding:10px 13px;font-family:inherit;font-size:10px;font-weight:800;cursor:pointer}
+.primaryButton{border:1px solid #2e5a3d;background:#2e5a3d;color:#fff}.secondaryButton{border:1px solid #d8d5cd;background:#fff;color:#3d4039}
+.primaryButton:disabled,.secondaryButton:disabled,.dangerButton:disabled{opacity:.55;cursor:wait}
+.success,.error{margin-top:13px;padding:9px 11px;border-radius:9px;font-size:9px;line-height:1.5}.success{border:1px solid #c5dbc9;background:#eff7f0;color:#2d5a3e}.error{border:1px solid #efc6ba;background:#fff1ed;color:#874936}
+.toggleRow{width:100%;border:1px solid #e2dfd6;border-radius:12px;background:#fbfaf7;padding:13px;display:flex;align-items:center;justify-content:space-between;gap:18px;text-align:left;cursor:pointer}
+.toggleRow>span:first-child{display:grid;gap:4px}.toggleRow strong{font-size:10px;color:#343730}.toggleRow small{font-size:8px;line-height:1.45;color:#85877f}
+.toggle{width:38px;height:22px;flex:0 0 auto;border-radius:999px;padding:3px;background:#d8d7d1;transition:.16s}.toggle>span{display:block;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.15);transition:.16s}
+.toggleOn{background:#3d6a4b}.toggleOn>span{transform:translateX(16px)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:9px}.stats>div{display:grid;gap:2px;padding:14px;border-radius:12px;background:#f6f5f0}
+.stats strong{font-size:20px;line-height:1;letter-spacing:-.03em}.stats span{color:#85877f;font-size:8px;text-transform:uppercase;letter-spacing:.05em}
+.stackActions{display:flex;flex-wrap:wrap;gap:8px}.dangerCard{margin-top:16px;border-color:#e5c9c1;background:#fffaf8}.dangerIcon{background:#f6e6e1;color:#874936}
+.dangerRows{display:grid;border-top:1px solid #eadbd6}.dangerRows>div{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:15px 0;border-bottom:1px solid #eadbd6}
+.dangerRows>div>span{display:grid;gap:4px}.dangerRows strong{font-size:10px}.dangerRows small{font-size:8px;line-height:1.45;color:#8b7d78}
+.dangerButton{flex:0 0 auto;border:1px solid #d9a99c;background:#fff;color:#8a4434}
+@media(max-width:780px){.page{padding:16px}.header{margin-bottom:30px}.grid{grid-template-columns:1fr}.dangerRows>div{align-items:flex-start;flex-direction:column}.dangerButton{width:100%}}

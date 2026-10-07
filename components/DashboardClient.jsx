@@ -36,6 +36,7 @@ import {
 import styles from './LibraryPatch.module.css';
 import { formatScreenshotDate } from '@/lib/dateFormat';
 import { scoreScreenshotSearch } from '@/lib/smartSearch';
+import { trackBetaEvent } from '@/lib/betaAnalytics';
 
 const CATEGORY_ORDER = [
   'product',
@@ -694,6 +695,10 @@ export default function DashboardClient({
                                         rel="noopener noreferrer"
                                         className={`${styles.cardActionPill} ${styles.cardActionLink}`}
                                         title={`${labelText} — opens in a new tab`}
+                                        onClick={() => void trackBetaEvent(user.id, 'smart_action_used', {
+                                          action,
+                                          category: item.category || 'other',
+                                        })}
                                       >
                                         {actionIcon(action)}
                                         {labelText}
@@ -707,7 +712,14 @@ export default function DashboardClient({
                                         type="button"
                                         key={action}
                                         className={`${styles.cardActionPill} ${styles.cardSaveButton} ${isSaved ? styles.cardActionSaved : ''}`}
-                                        onClick={() => toggleSavedCollection(item, collection)}
+                                        onClick={() => {
+                                          void trackBetaEvent(user.id, 'smart_action_used', {
+                                            action,
+                                            category: item.category || 'other',
+                                            collection,
+                                          });
+                                          toggleSavedCollection(item, collection);
+                                        }}
                                         disabled={!collectionsReady || isSaving}
                                         title={isSaved ? `Remove from ${collectionLabel(collection)}` : `Save to ${collectionLabel(collection)}`}
                                       >

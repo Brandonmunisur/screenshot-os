@@ -413,9 +413,9 @@ export default function DashboardClient({
   }
 
   const displayName =
+    user.user_metadata?.display_name ||
     user.user_metadata?.full_name ||
     user.user_metadata?.name ||
-    user.user_metadata?.display_name ||
     user.email?.split('@')[0] ||
     'there';
 
@@ -440,7 +440,7 @@ export default function DashboardClient({
           </button>
           <button disabled><Sparkles size={17} /> AI actions <small>next</small></button>
           <button disabled><Clock3 size={17} /> Reminders <small>soon</small></button>
-          <Link href="/dashboard/settings"><Settings size={17} /> Settings</Link>
+          <Link href="/dashboard/settings" className={styles.settingsLink}><Settings size={17} /> Settings</Link>
         </nav>
 
         <div className={styles.savedListsSection}>

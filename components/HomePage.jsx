@@ -190,6 +190,7 @@ export default function HomePage() {
       <footer className="footer">
         <Logo />
         <p>ScreenshotOS — turning real captures into organised, searchable actions. Demo photography from <a href="https://unsplash.com" target="_blank" rel="noreferrer">Unsplash</a>.</p>
+        <div className="footer-legal"><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link></div>
         <span>© 2026 ScreenshotOS</span>
       </footer>
     </div>

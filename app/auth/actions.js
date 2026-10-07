@@ -8,6 +8,19 @@ function loginUrl(params) {
   return `/login?${search.toString()}`;
 }
 
+function siteUrl() {
+  const vercelUrl = process.env.VERCEL_URL;
+
+  if (process.env.VERCEL_ENV === 'preview' && vercelUrl) {
+    return `https://${vercelUrl}`;
+  }
+
+  return (
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    (vercelUrl ? `https://${vercelUrl}` : 'http://localhost:3000')
+  );
+}
+
 
 // ------------------------------------
 // EMAIL / PASSWORD SIGN IN
@@ -72,8 +85,7 @@ export async function signUp(formData) {
   // before creating the new account.
   await supabase.auth.signOut();
 
-  const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  const currentSiteUrl = siteUrl();
 
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -84,7 +96,7 @@ export async function signUp(formData) {
         display_name: name || email.split('@')[0],
       },
 
-      emailRedirectTo: `${siteUrl}/auth/confirm`,
+      emailRedirectTo: `${currentSiteUrl}/auth/confirm`,
     },
   });
 
@@ -121,14 +133,13 @@ export async function signInWithGoogle() {
   // Remove old ScreenshotOS session first.
   await supabase.auth.signOut();
 
-  const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  const currentSiteUrl = siteUrl();
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
 
     options: {
-      redirectTo: `${siteUrl}/auth/confirm`,
+      redirectTo: `${currentSiteUrl}/auth/confirm`,
 
       // Always show Google's account selector.
       queryParams: {

@@ -34,6 +34,7 @@ import {
 } from '@/lib/screenshotCollections';
 import styles from './LibraryPatch.module.css';
 import { formatScreenshotDate } from '@/lib/dateFormat';
+import { scoreScreenshotSearch } from '@/lib/smartSearch';
 
 const CATEGORY_ORDER = [
   'product',
@@ -61,6 +62,14 @@ const ACTION_LABELS = {
   save: 'Save',
   search_web: 'Search Web',
 };
+
+const QUICK_SEARCHES = [
+  { id: 'recent', label: 'Recent' },
+  { id: 'wishlist', label: 'Wishlist' },
+  { id: 'food', label: 'Food' },
+  { id: 'travel', label: 'Travel' },
+  { id: 'places', label: 'Places' },
+];
 
 function initials(email, name) {
   const source = name || email || 'U';
@@ -215,24 +224,64 @@ export default function DashboardClient({
     return counts;
   }, [savedIdsByCollection]);
 
+  const collectionsByScreenshot = useMemo(() => {
+    const result = new Map();
+
+    savedEntries.forEach((entry) => {
+      const current = result.get(entry.screenshot_id) || [];
+      current.push(entry.collection);
+      result.set(entry.screenshot_id, current);
+    });
+
+    return result;
+  }, [savedEntries]);
+
   const filtered = useMemo(() => {
-    const needle = query.trim().toLowerCase();
+    const smartQuery = query.trim();
 
-    const result = screenshots.filter((item) => {
-      const matchesCategory =
-        selectedCategory === 'all' || (item.category || 'other') === selectedCategory;
-      const matchesCollection =
-        selectedCollection === 'all' || savedIdsByCollection[selectedCollection]?.has(item.id);
-      const matchesQuery = !needle || searchableText(item).includes(needle);
-      return matchesCategory && matchesCollection && matchesQuery;
-    });
+    const result = screenshots
+      .map((item) => {
+        const matchesCategory =
+          selectedCategory === 'all' || (item.category || 'other') === selectedCategory;
+        const matchesCollection =
+          selectedCollection === 'all' || savedIdsByCollection[selectedCollection]?.has(item.id);
 
-    return [...result].sort((a, b) => {
-      const aTime = new Date(a.created_at).getTime();
-      const bTime = new Date(b.created_at).getTime();
-      return sortOrder === 'oldest' ? aTime - bTime : bTime - aTime;
-    });
-  }, [screenshots, query, selectedCategory, selectedCollection, savedIdsByCollection, sortOrder]);
+        if (!matchesCategory || !matchesCollection) return null;
+
+        const score = smartQuery
+          ? scoreScreenshotSearch(
+              item,
+              smartQuery,
+              collectionsByScreenshot.get(item.id) || []
+            )
+          : 1;
+
+        if (smartQuery && score <= 0) return null;
+
+        return { item, score };
+      })
+      .filter(Boolean);
+
+    return result
+      .sort((a, b) => {
+        if (smartQuery && sortOrder === 'relevance' && b.score !== a.score) {
+          return b.score - a.score;
+        }
+
+        const aTime = new Date(a.item.created_at).getTime();
+        const bTime = new Date(b.item.created_at).getTime();
+        return sortOrder === 'oldest' ? aTime - bTime : bTime - aTime;
+      })
+      .map(({ item }) => item);
+  }, [
+    screenshots,
+    query,
+    selectedCategory,
+    selectedCollection,
+    savedIdsByCollection,
+    collectionsByScreenshot,
+    sortOrder,
+  ]);
 
   function clearLibraryFilters() {
     setQuery('');
@@ -241,10 +290,60 @@ export default function DashboardClient({
     setSortOrder('newest');
   }
 
+  function handleSearchChange(value) {
+    setQuery(value);
+
+    if (value.trim()) {
+      setSortOrder('relevance');
+    } else {
+      setSortOrder((current) => (current === 'relevance' ? 'newest' : current));
+    }
+  }
+
   function openCollection(collection) {
     setSelectedCollection(collection);
     setSelectedCategory('all');
     setQuery('');
+    setSortOrder((current) => (current === 'relevance' ? 'newest' : current));
+  }
+
+  function applyQuickSearch(id) {
+    setQuery('');
+    setSortOrder('newest');
+
+    if (id === 'wishlist') {
+      setSelectedCollection('wishlist');
+      setSelectedCategory('all');
+      return;
+    }
+
+    setSelectedCollection('all');
+
+    if (id === 'food') {
+      setSelectedCategory('food');
+    } else if (id === 'travel') {
+      setSelectedCategory('travel');
+    } else if (id === 'places') {
+      setSelectedCategory('place');
+    } else {
+      setSelectedCategory('all');
+    }
+  }
+
+  function isQuickSearchActive(id) {
+    if (query.trim()) return false;
+
+    if (id === 'wishlist') {
+      return selectedCollection === 'wishlist' && selectedCategory === 'all';
+    }
+
+    if (selectedCollection !== 'all') return false;
+
+    if (id === 'food') return selectedCategory === 'food';
+    if (id === 'travel') return selectedCategory === 'travel';
+    if (id === 'places') return selectedCategory === 'place';
+
+    return selectedCategory === 'all' && sortOrder === 'newest';
   }
 
   async function toggleSavedCollection(item, collection) {
@@ -385,8 +484,8 @@ export default function DashboardClient({
             <Search size={18} />
             <input
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search screenshots, brands, venues, keywords..."
+              onChange={(event) => handleSearchChange(event.target.value)}
+              placeholder='Search naturally: "black Nike shoes", "Cape Town travel"...'
               aria-label="Search screenshots"
             />
           </div>
@@ -399,6 +498,35 @@ export default function DashboardClient({
             <h1>Good to see you, {displayName}.</h1>
             <p>Upload a screenshot and ScreenshotOS will save it privately, then analyse what it contains and why it may matter.</p>
           </section>
+
+          {screenshots.length > 0 && (
+            <section className={styles.smartSearchTools} aria-label="Smarter search shortcuts">
+              <div className={styles.smartSearchCopy}>
+                <span className={styles.smartSearchIcon}><Sparkles size={14} /></span>
+                <div>
+                  <strong>Smarter Search</strong>
+                  <span>Try “black Nike shoes”, “restaurants I saved”, “screenshots from October” or “food from Flame Café”.</span>
+                </div>
+                {query.trim() && (
+                  <small>{filtered.length} {filtered.length === 1 ? 'match' : 'matches'}</small>
+                )}
+              </div>
+
+              <div className={styles.quickSearchChips}>
+                {QUICK_SEARCHES.map((item) => (
+                  <button
+                    type="button"
+                    key={item.id}
+                    className={`${styles.quickSearchChip} ${isQuickSearchActive(item.id) ? styles.quickSearchChipActive : ''}`}
+                    onClick={() => applyQuickSearch(item.id)}
+                    aria-pressed={isQuickSearchActive(item.id)}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
 
           {!collectionsReady && (
             <div className={styles.collectionsNotice}>
@@ -471,6 +599,7 @@ export default function DashboardClient({
                 <label className={styles.sortControl}>
                   <span>Sort</span>
                   <select value={sortOrder} onChange={(event) => setSortOrder(event.target.value)}>
+                    {query.trim() && <option value="relevance">Best match</option>}
                     <option value="newest">Newest</option>
                     <option value="oldest">Oldest</option>
                   </select>

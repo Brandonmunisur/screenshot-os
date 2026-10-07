@@ -14,7 +14,7 @@ function extensionFor(file) {
   return 'png';
 }
 
-export default function UploadDropzone({ userId, compact = false }) {
+export default function UploadDropzone({ userId, compact = false, autoAnalyze = true }) {
   const inputRef = useRef(null);
   const router = useRouter();
   const [dragging, setDragging] = useState(false);
@@ -73,20 +73,23 @@ export default function UploadDropzone({ userId, compact = false }) {
 
       if (inputRef.current) inputRef.current.value = '';
 
-      // Show the saved screenshot immediately, then analyse it through the server.
+      // Show the saved screenshot immediately. AI analysis is optional per account setting.
       router.refresh();
-      setStage('analyzing');
 
-      const analysisResponse = await fetch(`/api/screenshots/${row.id}/analyze`, {
-        method: 'POST',
-      });
-      const analysisPayload = await analysisResponse.json().catch(() => ({}));
+      if (autoAnalyze) {
+        setStage('analyzing');
 
-      if (!analysisResponse.ok) {
-        throw new Error(analysisPayload.error || 'The screenshot was saved, but AI analysis failed.');
+        const analysisResponse = await fetch(`/api/screenshots/${row.id}/analyze`, {
+          method: 'POST',
+        });
+        const analysisPayload = await analysisResponse.json().catch(() => ({}));
+
+        if (!analysisResponse.ok) {
+          throw new Error(analysisPayload.error || 'The screenshot was saved, but AI analysis failed.');
+        }
+
+        router.refresh();
       }
-
-      router.refresh();
     } catch (uploadError) {
       setError(uploadError?.message || 'Upload failed. Try again.');
       router.refresh();

@@ -135,7 +135,7 @@ button { cursor: pointer; }
 
 @media(max-width:1050px){.auth-page{grid-template-columns:1fr}.auth-story{min-height:520px}.auth-story-copy{margin-top:90px}.auth-form-wrap{padding:75px 30px}.real-screenshot-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:780px){.auth-story{padding:30px 24px}.auth-story>.brand{top:30px;right:24px}.auth-proof-grid{grid-template-columns:1fr}.real-dashboard{display:block}.real-sidebar{position:static;height:auto;display:grid;grid-template-columns:1fr auto;align-items:center;padding:15px 17px}.real-sidebar>.compact-upload-wrap{grid-column:2}.real-side-nav,.real-sidebar-security,.real-profile{display:none}.real-dashboard-header{top:0;padding:0 17px}.dashboard-search{width:78vw}.dashboard-user-pill{display:none}.real-dashboard-content{padding:38px 17px 65px}.real-screenshot-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.screenshot-delete{opacity:1;transform:none}}
-@media(max-width:480px){.auth-story-copy h1{font-size:53px}.auth-form-wrap{padding:55px 20px}.auth-form-card h2{font-size:42px}.real-screenshot-grid{grid-template-columns:1fr 1fr;gap:10px}.real-screenshot-meta{padding:11px}.real-dropzone{min-height:150px}.dashboard-intro h1{font-size:43px}}
+@media(max-width:480px){.auth-story-copy h1{font-size:53px}.auth-form-wrap{padding:55px 20px}.auth-form-card h2{font-size:42px}.real-screenshot-grid{grid-template-columns:1fr;gap:12px}.real-screenshot-meta{padding:13px}.real-dropzone{min-height:150px}.dashboard-intro h1{font-size:43px}.dashboard-search{width:calc(100vw - 92px)}}
 .real-image-fallback{width:100%;height:100%;display:grid;place-items:center;color:#8b8c86;background:#e9e7df}.real-image-fallback svg{width:28px;height:28px}
 
 /* Real photography used throughout the public demo instead of generated CSS artwork. */
@@ -144,3 +144,8 @@ button { cursor: pointer; }
 .art-photo-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.02) 38%,rgba(0,0,0,.58) 100%);pointer-events:none}
 .art-photo-label{position:absolute;left:12px;bottom:10px;z-index:2;font-family:'DM Mono';font-size:6px;letter-spacing:.14em;color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.55)}
 .footer a{color:inherit;text-underline-offset:3px}
+
+
+/* Beta readiness */
+.footer-legal{display:flex;align-items:center;gap:14px;font-size:10px}
+.footer-legal a{text-decoration:underline;text-underline-offset:3px}

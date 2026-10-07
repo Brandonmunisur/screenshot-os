@@ -294,3 +294,10 @@
 /* Account settings navigation */
 .settingsLink{border:0;background:transparent;color:#868a82;border-radius:9px;padding:10px 10px;font-size:10px;text-align:left;display:flex;align-items:center;gap:10px;text-decoration:none;transition:.16s}
 .settingsLink:hover{background:#22241f;color:#fff}
+
+
+/* Beta readiness: mobile dashboard access */
+.mobileSettingsButton{display:none;width:38px;height:38px;border:1px solid #ddd9cf;border-radius:10px;background:#fff;color:#3e413a;align-items:center;justify-content:center;text-decoration:none}
+@media(max-width:780px){
+  .mobileSettingsButton{display:inline-flex;flex:0 0 auto}
+}

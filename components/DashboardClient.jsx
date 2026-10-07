@@ -16,6 +16,7 @@ import {
   LogOut,
   MapPin,
   Search,
+  Settings,
   ShieldCheck,
   ShoppingBag,
   Sparkles,
@@ -419,6 +420,7 @@ export default function DashboardClient({
     'there';
 
   const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || '';
+  const autoAnalyze = user.user_metadata?.auto_analyze !== false;
   const libraryHeading =
     selectedCollection === 'all' ? 'Your screenshots' : collectionLabel(selectedCollection);
 
@@ -426,7 +428,7 @@ export default function DashboardClient({
     <main className="real-dashboard">
       <aside className="real-sidebar">
         <Link href="/"><Logo /></Link>
-        <UploadDropzone userId={user.id} compact />
+        <UploadDropzone userId={user.id} compact autoAnalyze={autoAnalyze} />
 
         <nav className="side-nav real-side-nav">
           <button
@@ -438,6 +440,7 @@ export default function DashboardClient({
           </button>
           <button disabled><Sparkles size={17} /> AI actions <small>next</small></button>
           <button disabled><Clock3 size={17} /> Reminders <small>soon</small></button>
+          <Link href="/dashboard/settings"><Settings size={17} /> Settings</Link>
         </nav>
 
         <div className={styles.savedListsSection}>
@@ -540,7 +543,7 @@ export default function DashboardClient({
 
           {saveError && <div className={`form-message error ${styles.saveMessage}`}>{saveError}</div>}
 
-          <UploadDropzone userId={user.id} />
+          <UploadDropzone userId={user.id} autoAnalyze={autoAnalyze} />
 
           <section className="library-section">
             <div className="library-heading">

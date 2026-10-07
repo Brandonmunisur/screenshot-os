@@ -26,7 +26,7 @@ import {
 import Logo from './Logo';
 import UploadDropzone from './UploadDropzone';
 import { signOut } from '@/app/auth/actions';
-import { getScreenshotActionHref } from '@/lib/screenshotActions';
+import { getScreenshotActionHref, getScreenshotActionLabel, getSmartActionsForScreenshot } from '@/lib/screenshotActions';
 import {
   COLLECTIONS,
   collectionLabel,
@@ -48,21 +48,6 @@ const CATEGORY_ORDER = [
   'conversation',
   'other',
 ];
-
-const ACTION_LABELS = {
-  find_product: 'Find Product',
-  find_similar: 'Find Similar',
-  track_price: 'Track Price',
-  save_wishlist: 'Save to Wishlist',
-  find_restaurant: 'Find Restaurant',
-  open_map: 'Open Map',
-  save_food: 'Save Food',
-  add_calendar: 'Add to Calendar',
-  extract_ingredients: 'Ingredients',
-  add_to_trip: 'Add to Trip',
-  save: 'Save',
-  search_web: 'Search Web',
-};
 
 const QUICK_SEARCHES = [
   { id: 'recent', label: 'Recent' },
@@ -155,14 +140,17 @@ function searchableText(item) {
 }
 
 function cardActionsFor(item) {
-  const actions = item.ai_data?.suggested_actions || [];
-  if (actions.length <= 3) return actions;
+  const actions = getSmartActionsForScreenshot(item);
 
   const saveAction = actions.find((action) => getCollectionForAction(item, action));
-  if (!saveAction) return actions.slice(0, 3);
+  const liveActions = actions.filter(
+    (action) => action !== saveAction && getScreenshotActionHref(item, action)
+  );
 
-  const firstTwo = actions.filter((action) => action !== saveAction).slice(0, 2);
-  return [...firstTwo, saveAction];
+  const firstTwo = liveActions.slice(0, 2);
+  if (saveAction) return [...firstTwo, saveAction];
+
+  return actions.slice(0, 3);
 }
 
 export default function DashboardClient({
@@ -687,7 +675,7 @@ export default function DashboardClient({
                                   const isSaving = savingKey === `${item.id}:${collection}`;
                                   const labelText = collection
                                     ? savedActionLabel(collection, isSaved)
-                                    : ACTION_LABELS[action] || pretty(action);
+                                    : getScreenshotActionLabel(action);
 
                                   if (href) {
                                     return (
@@ -728,7 +716,7 @@ export default function DashboardClient({
                                       title="Coming next"
                                     >
                                       {actionIcon(action)}
-                                      {ACTION_LABELS[action] || pretty(action)}
+                                      {getScreenshotActionLabel(action)}
                                     </span>
                                   );
                                 })}

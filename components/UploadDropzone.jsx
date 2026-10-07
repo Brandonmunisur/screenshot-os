@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ImagePlus, LoaderCircle, Sparkles, UploadCloud, X } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import { trackBetaEvent } from '@/lib/betaAnalytics';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
@@ -71,6 +72,12 @@ export default function UploadDropzone({ userId, compact = false, autoAnalyze = 
         throw rowError || new Error('Could not create the screenshot record.');
       }
 
+      void trackBetaEvent(userId, 'screenshot_uploaded', {
+        mime_type: file.type,
+        file_size: file.size,
+        auto_analyze: autoAnalyze,
+      });
+
       if (inputRef.current) inputRef.current.value = '';
 
       // Show the saved screenshot immediately. AI analysis is optional per account setting.
@@ -87,6 +94,10 @@ export default function UploadDropzone({ userId, compact = false, autoAnalyze = 
         if (!analysisResponse.ok) {
           throw new Error(analysisPayload.error || 'The screenshot was saved, but AI analysis failed.');
         }
+
+        void trackBetaEvent(userId, 'analysis_completed', {
+          screenshot_id: row.id,
+        });
 
         router.refresh();
       }

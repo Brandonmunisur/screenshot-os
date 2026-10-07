@@ -24,6 +24,7 @@ import {
   savedActionLabel,
 } from '@/lib/screenshotCollections';
 import { formatScreenshotDateTime } from '@/lib/dateFormat';
+import { trackBetaEvent } from '@/lib/betaAnalytics';
 
 const CATEGORIES = [
   'product',
@@ -511,6 +512,10 @@ export default function ScreenshotDetailClient({
                                   rel="noopener noreferrer"
                                   className={styles.detailActionLink}
                                   title={`${getScreenshotActionLabel(action)} — opens in a new tab`}
+                                  onClick={() => void trackBetaEvent(screenshot.user_id, 'smart_action_used', {
+                                    action,
+                                    category: screenshot.category || 'other',
+                                  })}
                                 >
                                   <Sparkles size={13} />
                                   <span>{getScreenshotActionLabel(action)}</span>
@@ -525,7 +530,14 @@ export default function ScreenshotDetailClient({
                                   type="button"
                                   key={action}
                                   className={`${styles.detailSaveButton} ${isSaved ? styles.detailActionSaved : ''}`}
-                                  onClick={() => toggleSavedCollection(collection)}
+                                  onClick={() => {
+                                    void trackBetaEvent(screenshot.user_id, 'smart_action_used', {
+                                      action,
+                                      category: screenshot.category || 'other',
+                                      collection,
+                                    });
+                                    toggleSavedCollection(collection);
+                                  }}
                                   disabled={!collectionsReady || isSaving}
                                   title={isSaved ? `Remove from ${collectionLabel(collection)}` : `Save to ${collectionLabel(collection)}`}
                                 >

@@ -481,6 +481,14 @@ export default function DashboardClient({
             />
           </div>
           <div className="dashboard-user-pill"><span className="live-dot" /> Connected</div>
+          <Link
+            href="/dashboard/settings"
+            className={styles.mobileSettingsButton}
+            aria-label="Open settings"
+            title="Settings"
+          >
+            <Settings size={18} />
+          </Link>
         </header>
 
         <div className="real-dashboard-content">

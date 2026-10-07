@@ -30,8 +30,28 @@ export async function POST(_request, context) {
 
   if (!process.env.GEMINI_API_KEY) {
     return NextResponse.json(
-      { error: 'GEMINI_API_KEY is not configured on the server.' },
+      { error: 'AI analysis is temporarily unavailable.' },
       { status: 503 }
+    );
+  }
+
+  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  const { count: recentAnalysisCount, error: rateLimitError } = await supabase
+    .from('analysis_events')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', user.id)
+    .gte('created_at', oneHourAgo);
+
+  if (!rateLimitError && (recentAnalysisCount || 0) >= 25) {
+    return NextResponse.json(
+      {
+        error: 'You have reached the beta analysis limit. Try again in about an hour.',
+        code: 'ANALYSIS_RATE_LIMIT',
+      },
+      {
+        status: 429,
+        headers: { 'Retry-After': '3600' },
+      }
     );
   }
 
@@ -60,6 +80,17 @@ export async function POST(_request, context) {
     }
 
     const imageBytes = Buffer.from(await imageBlob.arrayBuffer());
+
+    const { error: analysisEventError } = await supabase
+      .from('analysis_events')
+      .insert({
+        user_id: user.id,
+        screenshot_id: screenshot.id,
+      });
+
+    if (analysisEventError) {
+      console.warn('Could not record analysis usage:', analysisEventError.message);
+    }
 
     const result = await analyzeScreenshotWithGemini({
       imageBytes,

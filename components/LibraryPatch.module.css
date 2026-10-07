@@ -289,3 +289,8 @@
   .quickSearchChips::-webkit-scrollbar{display:none}
   .quickSearchChip{flex:0 0 auto}
 }
+
+
+/* Account settings navigation */
+.settingsLink{border:0;background:transparent;color:#868a82;border-radius:9px;padding:10px 10px;font-size:10px;text-align:left;display:flex;align-items:center;gap:10px;text-decoration:none;transition:.16s}
+.settingsLink:hover{background:#22241f;color:#fff}

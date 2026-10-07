@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import styles from './LibraryPatch.module.css';
-import { getScreenshotActionHref } from '@/lib/screenshotActions';
+import { getScreenshotActionHref, getScreenshotActionLabel, getSmartActionsForScreenshot } from '@/lib/screenshotActions';
 import {
   collectionLabel,
   getCollectionForAction,
@@ -492,11 +492,11 @@ export default function ScreenshotDetailClient({
                       </section>
                     )}
 
-                    {analysis.suggested_actions?.length > 0 && (
+                    {getSmartActionsForScreenshot(screenshot).length > 0 && (
                       <section className={styles.analysisSection}>
                         <h3>Suggested actions</h3>
                         <div className={styles.actionList}>
-                          {analysis.suggested_actions.map((action) => {
+                          {getSmartActionsForScreenshot(screenshot).map((action) => {
                             const href = getScreenshotActionHref(screenshot, action);
                             const collection = getCollectionForAction(screenshot, action);
                             const isSaved = Boolean(collection && savedCollections.has(collection));
@@ -510,10 +510,10 @@ export default function ScreenshotDetailClient({
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className={styles.detailActionLink}
-                                  title={`${pretty(action)} — opens in a new tab`}
+                                  title={`${getScreenshotActionLabel(action)} — opens in a new tab`}
                                 >
                                   <Sparkles size={13} />
-                                  <span>{pretty(action)}</span>
+                                  <span>{getScreenshotActionLabel(action)}</span>
                                   <ExternalLink size={12} />
                                 </a>
                               );

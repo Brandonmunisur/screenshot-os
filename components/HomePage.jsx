@@ -53,6 +53,10 @@ export default function HomePage() {
             <a href="#how" onClick={() => setMobileOpen(false)}>How it works</a>
             <a href="#privacy" onClick={() => setMobileOpen(false)}>Privacy</a>
             <a href="#pricing" onClick={() => setMobileOpen(false)}>Pricing</a>
+            <div className="mobile-auth-actions">
+              <Link href="/login" onClick={() => setMobileOpen(false)}>Sign in</Link>
+              <Link href="/login?mode=signup" onClick={() => setMobileOpen(false)}>Create account</Link>
+            </div>
           </div>
         )}
       </header>

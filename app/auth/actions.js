@@ -169,6 +169,19 @@ export async function signInWithGoogle() {
 
 
 // ------------------------------------
+// SWITCH ACCOUNT
+// ------------------------------------
+
+export async function switchAccount() {
+  const supabase = await createClient();
+
+  await supabase.auth.signOut();
+
+  redirect('/login');
+}
+
+
+// ------------------------------------
 // LOG OUT
 // ------------------------------------
 

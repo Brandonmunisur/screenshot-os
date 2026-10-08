@@ -149,3 +149,10 @@ button { cursor: pointer; }
 /* Beta readiness */
 .footer-legal{display:flex;align-items:center;gap:14px;font-size:10px}
 .footer-legal a{text-decoration:underline;text-underline-offset:3px}
+
+
+/* Mobile public authentication actions */
+.mobile-auth-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding-top:13px}
+.mobile-auth-actions a{border-bottom:0!important;border-radius:10px;text-align:center;font-size:11px;font-weight:800;padding:12px 10px!important}
+.mobile-auth-actions a:first-child{border:1px solid rgba(255,255,255,.18)}
+.mobile-auth-actions a:last-child{background:var(--green);color:#161713}

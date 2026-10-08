@@ -21,12 +21,43 @@ export default async function ScreenshotDetailPage({ params }) {
 
   const { data: screenshot, error } = await supabase
     .from('screenshots')
-    .select('id, user_id, storage_path, original_name, mime_type, file_size, status, title, category, description, intent, confidence, ai_data, analysis_error, analyzed_at, created_at')
+    .select('id, user_id, storage_path, original_name, mime_type, file_size, status, title, category, description, intent, confidence, ai_data, analysis_error, analyzed_at, analysis_started_at, created_at')
     .eq('id', id)
     .eq('user_id', user.id)
     .single();
 
   if (error || !screenshot) notFound();
+
+  let normalizedScreenshot = screenshot;
+  const startedAt = screenshot.analysis_started_at
+    ? new Date(screenshot.analysis_started_at).getTime()
+    : 0;
+
+  if (
+    screenshot.status === 'processing' &&
+    startedAt &&
+    startedAt < Date.now() - 2 * 60 * 1000
+  ) {
+    const analysis_error =
+      'AI analysis did not finish in time. Use Analyse screenshot to retry.';
+
+    await supabase
+      .from('screenshots')
+      .update({
+        status: 'failed',
+        analysis_error,
+        analysis_started_at: null,
+      })
+      .eq('id', screenshot.id)
+      .eq('user_id', user.id);
+
+    normalizedScreenshot = {
+      ...screenshot,
+      status: 'failed',
+      analysis_error,
+      analysis_started_at: null,
+    };
+  }
 
   const { data: signed } = await supabase.storage
     .from('screenshots')
@@ -40,7 +71,7 @@ export default async function ScreenshotDetailPage({ params }) {
 
   return (
     <ScreenshotDetailClient
-      screenshot={{ ...screenshot, signed_url: signed?.signedUrl || '' }}
+      screenshot={{ ...normalizedScreenshot, signed_url: signed?.signedUrl || '' }}
       initialSavedEntries={savedRows || []}
       collectionsReady={!savedRowsError}
     />

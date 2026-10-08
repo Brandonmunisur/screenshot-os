@@ -482,14 +482,29 @@ export default function DashboardClient({
             />
           </div>
           <div className="dashboard-user-pill"><span className="live-dot" /> Connected</div>
-          <Link
-            href="/dashboard/settings"
-            className={styles.mobileSettingsButton}
-            aria-label="Open settings"
-            title="Settings"
-          >
-            <Settings size={18} />
-          </Link>
+
+          <div className={styles.mobileAccountControls}>
+            <form action={signOut}>
+              <button
+                type="submit"
+                className={styles.mobileAccountButton}
+                aria-label="Log out"
+                title="Log out"
+              >
+                <LogOut size={17} />
+                <span>Log out</span>
+              </button>
+            </form>
+
+            <Link
+              href="/dashboard/settings"
+              className={styles.mobileSettingsButton}
+              aria-label="Open settings"
+              title="Settings"
+            >
+              <Settings size={18} />
+            </Link>
+          </div>
         </header>
 
         <div className="real-dashboard-content">

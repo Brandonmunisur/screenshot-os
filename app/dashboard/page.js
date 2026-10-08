@@ -23,7 +23,7 @@ export default async function DashboardPage() {
 
   const { data: rows, error } = await supabase
     .from('screenshots')
-    .select('id, storage_path, original_name, mime_type, file_size, status, title, category, description, intent, confidence, analysis_error, analyzed_at, ai_data, created_at')
+    .select('id, storage_path, original_name, mime_type, file_size, status, title, category, description, intent, confidence, analysis_error, analyzed_at, analysis_started_at, ai_data, created_at')
     .order('created_at', { ascending: false });
 
   if (error) {
@@ -44,7 +44,38 @@ export default async function DashboardPage() {
     .select('screenshot_id, collection, created_at')
     .order('created_at', { ascending: false });
 
-  const screenshots = await Promise.all((rows || []).map(async (row) => {
+  const staleBefore = Date.now() - 2 * 60 * 1000;
+  const normalizedRows = await Promise.all((rows || []).map(async (row) => {
+    const startedAt = row.analysis_started_at
+      ? new Date(row.analysis_started_at).getTime()
+      : 0;
+
+    if (row.status === 'processing' && startedAt && startedAt < staleBefore) {
+      const analysis_error =
+        'AI analysis did not finish in time. Open the screenshot and retry analysis.';
+
+      await supabase
+        .from('screenshots')
+        .update({
+          status: 'failed',
+          analysis_error,
+          analysis_started_at: null,
+        })
+        .eq('id', row.id)
+        .eq('user_id', user.id);
+
+      return {
+        ...row,
+        status: 'failed',
+        analysis_error,
+        analysis_started_at: null,
+      };
+    }
+
+    return row;
+  }));
+
+  const screenshots = await Promise.all(normalizedRows.map(async (row) => {
     const { data } = await supabase.storage
       .from('screenshots')
       .createSignedUrl(row.storage_path, 60 * 60);

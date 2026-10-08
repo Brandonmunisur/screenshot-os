@@ -301,3 +301,19 @@
 @media(max-width:780px){
   .mobileSettingsButton{display:inline-flex;flex:0 0 auto}
 }
+
+
+/* Mobile account controls */
+.mobileAccountControls{display:none;align-items:center;gap:7px}
+.mobileAccountControls form{margin:0}
+.mobileAccountButton{height:38px;border:1px solid #ddd9cf;border-radius:10px;background:#fff;color:#3e413a;display:inline-flex;align-items:center;gap:6px;padding:0 10px;font-family:inherit;font-size:9px;font-weight:800}
+.mobileAccountButton:hover{background:#f1f0ea}
+.mobileSettingsButton{display:none;width:38px;height:38px;border:1px solid #ddd9cf;border-radius:10px;background:#fff;color:#3e413a;align-items:center;justify-content:center;text-decoration:none}
+@media(max-width:780px){
+  .mobileAccountControls{display:flex}
+  .mobileSettingsButton{display:inline-flex}
+}
+@media(max-width:520px){
+  .mobileAccountButton span{display:none}
+  .mobileAccountButton{width:38px;padding:0;justify-content:center}
+}

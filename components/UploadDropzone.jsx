@@ -86,9 +86,26 @@ export default function UploadDropzone({ userId, compact = false, autoAnalyze = 
       if (autoAnalyze) {
         setStage('analyzing');
 
-        const analysisResponse = await fetch(`/api/screenshots/${row.id}/analyze`, {
-          method: 'POST',
-        });
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 35000);
+
+        let analysisResponse;
+        try {
+          analysisResponse = await fetch(`/api/screenshots/${row.id}/analyze`, {
+            method: 'POST',
+            signal: controller.signal,
+          });
+        } catch (analysisRequestError) {
+          if (analysisRequestError?.name === 'AbortError') {
+            throw new Error(
+              'AI analysis is taking longer than expected. The screenshot is saved; open it to retry.'
+            );
+          }
+          throw analysisRequestError;
+        } finally {
+          clearTimeout(timeoutId);
+        }
+
         const analysisPayload = await analysisResponse.json().catch(() => ({}));
 
         if (!analysisResponse.ok) {

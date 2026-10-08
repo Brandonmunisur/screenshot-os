@@ -60,6 +60,7 @@ export async function POST(_request, context) {
     .update({
       status: 'processing',
       analysis_error: null,
+      analysis_started_at: new Date().toISOString(),
     })
     .eq('id', screenshot.id)
     .eq('user_id', user.id);
@@ -120,6 +121,7 @@ export async function POST(_request, context) {
         ai_data: aiData,
         analysis_error: null,
         analyzed_at: new Date().toISOString(),
+        analysis_started_at: null,
         status: 'ready',
       })
       .eq('id', screenshot.id)
@@ -136,6 +138,7 @@ export async function POST(_request, context) {
       .from('screenshots')
       .update({
         status: 'failed',
+        analysis_started_at: null,
         analysis_error: message.slice(0, 1000),
       })
       .eq('id', screenshot.id)

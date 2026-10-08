@@ -128,9 +128,26 @@ export default function ScreenshotDetailClient({
     setNotice('');
 
     try {
-      const response = await fetch(`/api/screenshots/${screenshot.id}/analyze`, {
-        method: 'POST',
-      });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 35000);
+
+      let response;
+      try {
+        response = await fetch(`/api/screenshots/${screenshot.id}/analyze`, {
+          method: 'POST',
+          signal: controller.signal,
+        });
+      } catch (analysisRequestError) {
+        if (analysisRequestError?.name === 'AbortError') {
+          throw new Error(
+            'AI analysis is taking longer than expected. Try again in a moment.'
+          );
+        }
+        throw analysisRequestError;
+      } finally {
+        clearTimeout(timeoutId);
+      }
+
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error || 'Analysis failed');
 

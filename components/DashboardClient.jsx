@@ -13,7 +13,6 @@ import {
   Heart,
   ImagePlus,
   LoaderCircle,
-  LogIn,
   LogOut,
   MapPin,
   Search,
@@ -26,7 +25,7 @@ import {
 } from 'lucide-react';
 import Logo from './Logo';
 import UploadDropzone from './UploadDropzone';
-import { signOut, switchAccount } from '@/app/auth/actions';
+import { signOut } from '@/app/auth/actions';
 import { getScreenshotActionHref, getScreenshotActionLabel, getSmartActionsForScreenshot } from '@/lib/screenshotActions';
 import {
   COLLECTIONS,
@@ -485,38 +484,17 @@ export default function DashboardClient({
           <div className="dashboard-user-pill"><span className="live-dot" /> Connected</div>
 
           <div className={styles.mobileAccountControls}>
-            <form action={switchAccount}>
-              <button
-                type="submit"
-                className={styles.mobileAccountButton}
-                aria-label="Switch account"
-                title="Switch account"
-              >
-                <LogIn size={17} />
-                <span>Switch</span>
-              </button>
-            </form>
-
             <form action={signOut}>
               <button
                 type="submit"
                 className={styles.mobileAccountButton}
-                aria-label="Sign out"
-                title="Sign out"
+                aria-label="Log out"
+                title="Log out"
               >
                 <LogOut size={17} />
                 <span>Log out</span>
               </button>
             </form>
-
-            <Link
-              href="/dashboard/settings"
-              className={styles.mobileSettingsButton}
-              aria-label="Open settings"
-              title="Settings"
-            >
-              <Settings size={18} />
-            </Link>
           </div>
         </header>
 

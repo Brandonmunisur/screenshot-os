@@ -13,7 +13,10 @@ create index if not exists analysis_events_user_created_idx
 
 alter table public.analysis_events enable row level security;
 
-grant select, insert on public.analysis_events to authenticated;
+-- Explicit Data API grants for rate-limit event tracking.
+revoke all on table public.analysis_events from anon, authenticated, service_role;
+grant select, insert on table public.analysis_events to authenticated;
+grant select, insert, update, delete on table public.analysis_events to service_role;
 
 drop policy if exists "Users can view own analysis events" on public.analysis_events;
 drop policy if exists "Users can add own analysis events" on public.analysis_events;
@@ -46,7 +49,10 @@ create index if not exists beta_events_name_created_idx
 
 alter table public.beta_events enable row level security;
 
-grant insert on public.beta_events to authenticated;
+-- Explicit Data API grants for first-party beta event logging.
+revoke all on table public.beta_events from anon, authenticated, service_role;
+grant insert on table public.beta_events to authenticated;
+grant select, insert, update, delete on table public.beta_events to service_role;
 
 drop policy if exists "Users can add own beta events" on public.beta_events;
 

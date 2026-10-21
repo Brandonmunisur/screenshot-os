@@ -19,7 +19,12 @@ create index if not exists screenshots_user_created_idx
   on public.screenshots (user_id, created_at desc);
 
 alter table public.screenshots enable row level security;
-grant select, insert, update, delete on public.screenshots to authenticated;
+
+-- Explicit Data API grants. Supabase no longer guarantees automatic grants for
+-- new public-schema tables, so keep API access deterministic in this migration.
+revoke all on table public.screenshots from anon, authenticated, service_role;
+grant select, insert, update, delete on table public.screenshots to authenticated;
+grant select, insert, update, delete on table public.screenshots to service_role;
 
 drop policy if exists "Users can view own screenshots" on public.screenshots;
 drop policy if exists "Users can insert own screenshots" on public.screenshots;

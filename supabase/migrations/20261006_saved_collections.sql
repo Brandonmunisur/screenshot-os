@@ -29,7 +29,10 @@ create index if not exists screenshot_saves_screenshot_idx
 
 alter table public.screenshot_saves enable row level security;
 
-grant select, insert, delete on public.screenshot_saves to authenticated;
+-- Explicit Data API grants. Anonymous users should not access saved collections.
+revoke all on table public.screenshot_saves from anon, authenticated, service_role;
+grant select, insert, delete on table public.screenshot_saves to authenticated;
+grant select, insert, update, delete on table public.screenshot_saves to service_role;
 
 drop policy if exists "Users can view own saved collections" on public.screenshot_saves;
 drop policy if exists "Users can save own screenshots" on public.screenshot_saves;
